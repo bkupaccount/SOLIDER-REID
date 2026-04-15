@@ -17,7 +17,6 @@ from torch.nn import ModuleList
 from torch.nn import Sequential
 from torch.nn import Linear
 from torch import Tensor
-from mmcv.runner import load_checkpoint as _load_checkpoint
 
 from itertools import repeat
 import collections.abc
@@ -1320,8 +1319,11 @@ class SwinTransformer(BaseModule):
                     state_dict[k[9:]] = v
 
             # strip prefix of state_dict
-            if list(state_dict.keys())[0].startswith('module.'):
+            if len(state_dict) > 0 and list(state_dict.keys())[0].startswith('module.'):
                 state_dict = {k[7:]: v for k, v in state_dict.items()}
+            
+            # strip base prefix which might be present in SOLIDER checkpoints
+            state_dict = {k[5:] if k.startswith('base.') else k: v for k, v in state_dict.items()}
 
             # reshape absolute position embedding
             if state_dict.get('absolute_pos_embed') is not None:
@@ -1390,13 +1392,19 @@ class SwinTransformer(BaseModule):
         return x, outs
 
 def swin_base_patch4_window7_224(img_size=224,drop_rate=0.0, attn_drop_rate=0.0, drop_path_rate=0., **kwargs):
+    if 'pretrained' in kwargs and isinstance(kwargs['pretrained'], str):
+        kwargs['init_cfg'] = dict(type='Pretrained', checkpoint=kwargs.pop('pretrained'))
     model = SwinTransformer(pretrain_img_size = img_size, patch_size=4, window_size=7, embed_dims=128, depths=(2, 2, 18, 2), num_heads=(4, 8, 16, 32), drop_path_rate=drop_path_rate, drop_rate=drop_rate, attn_drop_rate=attn_drop_rate, **kwargs)
     return model
 
 def swin_small_patch4_window7_224(img_size=224,drop_rate=0.0, attn_drop_rate=0.0, drop_path_rate=0., **kwargs):
+    if 'pretrained' in kwargs and isinstance(kwargs['pretrained'], str):
+        kwargs['init_cfg'] = dict(type='Pretrained', checkpoint=kwargs.pop('pretrained'))
     model = SwinTransformer(pretrain_img_size = img_size, patch_size=4, window_size=7, embed_dims=96, depths=(2, 2, 18, 2), num_heads=(3, 6, 12, 24), drop_path_rate=drop_path_rate, drop_rate=drop_rate, attn_drop_rate=attn_drop_rate, **kwargs)
     return model
 
 def swin_tiny_patch4_window7_224(img_size=224,drop_rate=0.0, attn_drop_rate=0.0, drop_path_rate=0., **kwargs):
+    if 'pretrained' in kwargs and isinstance(kwargs['pretrained'], str):
+        kwargs['init_cfg'] = dict(type='Pretrained', checkpoint=kwargs.pop('pretrained'))
     model = SwinTransformer(pretrain_img_size = img_size, patch_size=4, window_size=7, embed_dims=96, depths=(2, 2, 6, 2), num_heads=(3, 6, 12, 24), drop_path_rate=drop_path_rate, drop_rate=drop_rate, attn_drop_rate=attn_drop_rate, **kwargs)
     return model

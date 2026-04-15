@@ -8,7 +8,7 @@ We modify the code from [TransReID](https://github.com/damo-cv/TransReID), and y
 
 ## Installation and Datasets
 
-We use python version 3.7, PyTorch version 1.7.1, CUDA 10.1 and torchvision 0.8.2. More details of installation and dataset preparation can be found in [TransReID-SSL](https://github.com/damo-cv/TransReID-SSL).
+We use python version > 3.10, PyTorch version > 2.6, CUDA 11.8 and torchvision > 0.21. More details of installation and dataset preparation can be found in [TransReID-SSL](https://github.com/damo-cv/TransReID-SSL).
 
 ## Prepare Pre-trained Models 
 You can download models from [SOLIDER](https://github.com/tinyvision/SOLIDER), or use [SOLIDER](https://github.com/tinyvision/SOLIDER) to train your own models.
